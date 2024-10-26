@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Upload</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        /* body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #201e1e 0%, #3b0e06 100%);
+            color: #fff;
+        } */
+        /* style.css */
+        .marquee{
+            color: white;
+            font-style: italic;
+            margin-left: 20px;
+            margin-bottom: 650px;
+            position: fixed;
+            background-color: brown;
+            width: 90%;
+            padding: 20px;
+            border-radius: 20px;
+            font-size: larger;
+            font-size: larger;
+            
+        }
+        footer{
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: black;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            
+        }
+body {
+            animation: colorChange 10s infinite;
+            justify-items: center;
+}
+
+@keyframes colorChange {
+    0% { background-color: rgb(151, 173, 229); }    /* Red */
+    25% { background-color: rgb(239, 111, 111); }   /* Green */
+    50% { background-color: rgb(125, 125, 222); }   /* Blue */
+    75% { background-color: rgb(27, 133, 117); } /* Yellow */
+    100% { background-color: rgb(231, 113, 113); }  /* Back to Red */
+}
+
+        .container {
+            margin-top: 100px;    
+            max-width: 400px;
+            width: 90%;
+            background: #fff;
+            color: #333;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(227, 74, 74, 0.3);
+            overflow: hidden;
+        
+        }
+        h1 {
+            background: #cacac0e3;
+            color: black;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background: #f0f0f5;
+            border: 2px dashed #764ba2;
+            color: #666;
+            text-align: center;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        input[type="file"]:hover {
+            background: #e0e0e8;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #fff;
+            background: #667eea;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #5661d8;
+            transform: scale(1.03);
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        #result a {
+            color: #667eea;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        #result a:hover {
+            text-decoration: underline;
+        }
+        /* Loading spinner */
+        #loading {
+            display: none; /* Hidden by default */
+            text-align: center;
+            padding: 20px;
+        }
+        #loading img {
+            width: 50px;
+            margin-bottom: 15px;
+        }
+        #loading p {
+            color: #333;
+            font-size: 1.1rem;
+        }
+        /* Animation */
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .container, h1, form, #result {
+            animation: fadeIn 0.6s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <marquee behavior="scroll" direction="right">Made by Shukla</marquee>
+    <div class="container">
+        <h1>Upload a Video</h1>
+        <form id="uploadForm" action="/process" method="POST" enctype="multipart/form-data">
+            <input type="file" name="video" accept="video/*" required />
+            <button type="submit">Upload Video</button>
+            <p>upload video only upto 300 mb</p>
+        </form>
+        <div id="loading">
+            <img src="https://i.imgur.com/llF5iyg.gif" alt="Loading Spinner">
+            <p>Processing your video, please wait...</p>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <footer>
+        For more Code info contact @Nitish Shukla
+                                   - nitishshukla260@gmail.com
+    </footer>
+
+    <script>
+      document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+          event.preventDefault();
+          const formData = new FormData(event.target);
+
+          // Show processing message while uploading
+          const loadingDiv = document.getElementById('loading');
+          const resultDiv = document.getElementById('result');
+          loadingDiv.style.display = 'block';
+          resultDiv.innerHTML = '';
+
+          try {
+              const response = await fetch('/process', {
+                  method: 'POST',
+                  body: formData,
+              });
+
+              if (!response.ok) {
+                  throw new Error('Network response was not ok');
+              }
+
+              const data = await response.json();
+              resultDiv.innerHTML = data.downloadUrls.map(url => `<a href="${url}" target="_blank">Download Reel</a><br>`).join('');
+          } catch (error) {
+              console.error('Error:', error);
+              resultDiv.innerHTML = 'Upload failed. Please try again.';
+          } finally {
+              loadingDiv.style.display = 'none';
+          }
+      });
+    </script>
+</body>
+</html>
